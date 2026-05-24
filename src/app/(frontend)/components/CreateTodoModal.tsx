@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
+import { createTodo } from '../actions/todo.action'
 
 export default function CreateTodoModal() {
   const [isOpen, setIsOpen] = useState(false)
@@ -10,6 +11,7 @@ export default function CreateTodoModal() {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [completed, setCompleted] = useState(false)
+  const [isPending, startTransition] = useTransition()
   const titleRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
 
@@ -33,68 +35,36 @@ export default function CreateTodoModal() {
     setError(null)
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError(null)
 
-    try {
-      const res = await fetch('/api/todos', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+    startTransition(async () => {
+      try {
+        await createTodo({
           title: title.trim(),
           description: description.trim() || undefined,
           completed,
-        }),
-      })
-
-      if (!res.ok) {
-        const data = await res.json()
-        throw new Error(data.errors?.[0]?.message ?? 'Failed to create task.')
+        })
+        handleClose()
+        router.refresh()
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Something went wrong.')
+      } finally {
+        setLoading(false)
       }
-
-      handleClose()
-      router.refresh()
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong.')
-    } finally {
-      setLoading(false)
-    }
+    })
   }
 
-  const inputStyle: React.CSSProperties = {
-    borderRadius: '8px',
-    padding: '10px 14px',
-    fontSize: '16px',
-    lineHeight: 1.5,
-    border: '1px solid #d3cec6',
-    outline: 'none',
-    width: '100%',
-    backgroundColor: '#ffffff',
-    color: '#111111',
-    transition: 'border-color 0.12s',
-  }
+  const busy = loading || isPending
 
   return (
     <>
       {/* Trigger */}
       <button
         onClick={() => setIsOpen(true)}
-        style={{
-          backgroundColor: '#111111',
-          color: '#ffffff',
-          fontSize: '15px',
-          fontWeight: 500,
-          lineHeight: 1.2,
-          borderRadius: '8px',
-          padding: '10px 18px',
-          border: 'none',
-          cursor: 'pointer',
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '7px',
-        }}
+        className="bg-ink text-white text-[15px] font-medium leading-[1.2] rounded-lg px-4.5 py-2.5 inline-flex items-center gap-1.75 cursor-pointer"
       >
         <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden>
           <path
@@ -110,45 +80,24 @@ export default function CreateTodoModal() {
       {/* Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center"
-          style={{ backgroundColor: 'rgba(0, 0, 0, 0.22)' }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.22)]"
           onClick={handleClose}
         >
           {/* Modal card */}
           <div
-            className="relative w-full mx-4"
-            style={{
-              maxWidth: '480px',
-              backgroundColor: '#ffffff',
-              border: '1px solid #d3cec6',
-              borderRadius: '16px',
-              padding: '32px',
-              boxShadow: 'none',
-            }}
+            className="relative w-full mx-4 max-w-120 bg-white border border-hairline rounded-2xl p-8 shadow-none"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal header */}
             <div className="flex items-center justify-between mb-6">
-              <h2
-                className="font-medium text-ink"
-                style={{ fontSize: '22px', lineHeight: 1.25, letterSpacing: '-0.3px' }}
-              >
+              <h2 className="font-medium text-ink text-[22px] leading-tight tracking-[-0.3px]">
                 New Task
               </h2>
               <button
                 type="button"
                 onClick={handleClose}
                 aria-label="Close"
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: '#626260',
-                  fontSize: '22px',
-                  lineHeight: 1,
-                  padding: '2px 6px',
-                  borderRadius: '6px',
-                }}
+                className="bg-transparent border-none cursor-pointer text-ink-muted text-[22px] leading-none px-1.5 py-0.5 rounded-md"
               >
                 ×
               </button>
@@ -159,10 +108,9 @@ export default function CreateTodoModal() {
               <div className="flex flex-col gap-1.5">
                 <label
                   htmlFor="todo-title"
-                  style={{ fontSize: '14px', fontWeight: 500, lineHeight: 1.3, color: '#111111' }}
+                  className="text-[14px] font-medium leading-[1.3] text-ink"
                 >
-                  Title{' '}
-                  <span style={{ color: '#c41c1c' }}>*</span>
+                  Title <span className="text-semantic-error">*</span>
                 </label>
                 <input
                   id="todo-title"
@@ -172,9 +120,7 @@ export default function CreateTodoModal() {
                   onChange={(e) => setTitle(e.target.value)}
                   required
                   placeholder="What needs to be done?"
-                  style={inputStyle}
-                  onFocus={(e) => (e.currentTarget.style.borderColor = '#111111')}
-                  onBlur={(e) => (e.currentTarget.style.borderColor = '#d3cec6')}
+                  className="rounded-lg px-3.5 py-2.5 text-[16px] leading-normal border border-hairline outline-none w-full bg-white text-ink transition-colors duration-150 focus:border-ink"
                 />
               </div>
 
@@ -182,12 +128,10 @@ export default function CreateTodoModal() {
               <div className="flex flex-col gap-1.5">
                 <label
                   htmlFor="todo-desc"
-                  style={{ fontSize: '14px', fontWeight: 500, lineHeight: 1.3, color: '#111111' }}
+                  className="text-[14px] font-medium leading-[1.3] text-ink"
                 >
                   Description{' '}
-                  <span style={{ fontSize: '13px', fontWeight: 400, color: '#9c9fa5' }}>
-                    optional
-                  </span>
+                  <span className="text-[13px] font-normal text-[#9c9fa5]">optional</span>
                 </label>
                 <textarea
                   id="todo-desc"
@@ -195,18 +139,13 @@ export default function CreateTodoModal() {
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Add details…"
                   rows={3}
-                  style={{ ...inputStyle, resize: 'none' }}
-                  onFocus={(e) => (e.currentTarget.style.borderColor = '#111111')}
-                  onBlur={(e) => (e.currentTarget.style.borderColor = '#d3cec6')}
+                  className="rounded-lg px-3.5 py-2.5 text-[16px] leading-normal border border-hairline outline-none w-full bg-white text-ink transition-colors duration-150 focus:border-ink resize-none"
                 />
               </div>
 
               {/* Completed toggle */}
-              <label
-                className="flex items-center gap-3"
-                style={{ cursor: 'pointer', userSelect: 'none' }}
-              >
-                <div style={{ position: 'relative', width: '18px', height: '18px', flexShrink: 0 }}>
+              <label className="flex items-center gap-3 cursor-pointer select-none">
+                <div className="relative w-4.5 h-4.5 shrink-0">
                   <input
                     type="checkbox"
                     checked={completed}
@@ -214,17 +153,11 @@ export default function CreateTodoModal() {
                     className="sr-only"
                   />
                   <div
-                    style={{
-                      width: '18px',
-                      height: '18px',
-                      borderRadius: '4px',
-                      border: `1.5px solid ${completed ? '#0bdf50' : '#d3cec6'}`,
-                      backgroundColor: completed ? '#0bdf50' : '#ffffff',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      transition: 'all 0.12s',
-                    }}
+                    className={`w-4.5 h-4.5 rounded-sm border-[1.5px] flex items-center justify-center transition-all duration-150 ${
+                      completed
+                        ? 'border-semantic-success bg-semantic-success'
+                        : 'border-hairline bg-white'
+                    }`}
                   >
                     {completed && (
                       <svg width="10" height="8" viewBox="0 0 10 8" fill="none" aria-hidden>
@@ -239,52 +172,31 @@ export default function CreateTodoModal() {
                     )}
                   </div>
                 </div>
-                <span style={{ fontSize: '15px', lineHeight: 1.4, color: '#111111' }}>
-                  Mark as completed
-                </span>
+                <span className="text-[15px] leading-[1.4] text-ink">Mark as completed</span>
               </label>
 
               {/* Error */}
-              {error && (
-                <p style={{ fontSize: '14px', lineHeight: 1.5, color: '#c41c1c' }}>{error}</p>
-              )}
+              {error && <p className="text-[14px] leading-normal text-semantic-error">{error}</p>}
 
               {/* Actions */}
               <div className="flex items-center justify-end gap-3 pt-1">
                 <button
                   type="button"
                   onClick={handleClose}
-                  style={{
-                    backgroundColor: '#ffffff',
-                    color: '#111111',
-                    fontSize: '15px',
-                    fontWeight: 500,
-                    lineHeight: 1.2,
-                    borderRadius: '8px',
-                    padding: '10px 18px',
-                    border: '1px solid #d3cec6',
-                    cursor: 'pointer',
-                  }}
+                  className="bg-white text-ink text-[15px] font-medium leading-[1.2] rounded-lg px-4.5 py-2.5 border border-hairline cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  disabled={loading || !title.trim()}
-                  style={{
-                    backgroundColor: loading || !title.trim() ? '#9c9fa5' : '#111111',
-                    color: '#ffffff',
-                    fontSize: '15px',
-                    fontWeight: 500,
-                    lineHeight: 1.2,
-                    borderRadius: '8px',
-                    padding: '10px 18px',
-                    border: 'none',
-                    cursor: loading || !title.trim() ? 'not-allowed' : 'pointer',
-                    transition: 'background-color 0.12s',
-                  }}
+                  disabled={busy || !title.trim()}
+                  className={`text-white text-[15px] font-medium leading-[1.2] rounded-lg px-4.5 py-2.5 transition-colors duration-150 ${
+                    busy || !title.trim()
+                      ? 'bg-[#9c9fa5] cursor-not-allowed'
+                      : 'bg-ink cursor-pointer'
+                  }`}
                 >
-                  {loading ? 'Creating…' : 'Create Task'}
+                  {busy ? 'Creating…' : 'Create Task'}
                 </button>
               </div>
             </form>

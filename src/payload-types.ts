@@ -171,7 +171,6 @@ export interface Todo {
   id: number;
   title: string;
   description?: string | null;
-  media?: (number | null) | Media;
   completed?: boolean | null;
   createdAt: string;
   updatedAt: string;
@@ -301,7 +300,6 @@ export interface MediaSelect<T extends boolean = true> {
 export interface TodosSelect<T extends boolean = true> {
   title?: T;
   description?: T;
-  media?: T;
   completed?: T;
   createdAt?: T;
   updatedAt?: T;

@@ -19,11 +19,6 @@ export const Todos: CollectionConfig = {
       type: 'textarea',
     },
     {
-      name: 'media',
-      type: 'upload',
-      relationTo: 'media',
-    },
-    {
       name: 'completed',
       type: 'checkbox',
       defaultValue: false,
