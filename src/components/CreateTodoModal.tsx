@@ -3,7 +3,7 @@
 import { Check, Plus } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useRef, useState, useTransition } from 'react'
-import { createTodo } from '../../../actions/todo.action'
+import { createTodo } from '../actions/todo.action'
 
 export default function CreateTodoModal() {
   const [isOpen, setIsOpen] = useState(false)

@@ -2,7 +2,7 @@
 
 import type { Todo } from '@/payload-types'
 import { useState, useTransition } from 'react'
-import { updateTodoStatus } from '../../../actions/todo.action'
+import { updateTodoStatus } from '../actions/todo.action'
 import { Check } from 'lucide-react'
 
 export default function TodoCard({ todo }: { todo: Todo }) {

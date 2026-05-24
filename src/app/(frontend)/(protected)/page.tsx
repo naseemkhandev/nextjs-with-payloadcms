@@ -1,8 +1,8 @@
 import { getPayload } from 'payload'
 import config from '@/payload.config'
-import CreateTodoModal from '../components/CreateTodoModal'
-import TodoCard from '../components/TodoCard'
-import Navbar from '../components/Navbar'
+import CreateTodoModal from '../../../components/CreateTodoModal'
+import TodoCard from '../../../components/TodoCard'
+import Navbar from '../../../components/Navbar'
 
 export default async function HomePage() {
   const payloadConfig = await config
