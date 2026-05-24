@@ -1,7 +1,8 @@
 import { getPayload } from 'payload'
 import config from '@/payload.config'
-import CreateTodoModal from './components/CreateTodoModal'
-import TodoCard from './components/TodoCard'
+import CreateTodoModal from '../components/CreateTodoModal'
+import TodoCard from '../components/TodoCard'
+import Navbar from '../components/Navbar'
 
 export default async function HomePage() {
   const payloadConfig = await config
@@ -19,23 +20,9 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-canvas">
-      {/* Top nav */}
-      <nav className="sticky top-0 z-10 h-14 bg-canvas border-b border-hairline">
-        <div className="max-w-7xl mx-auto px-8 h-full flex items-center justify-between">
-          <span className="font-medium text-ink text-[15px] leading-[1.2] tracking-normal">
-            Tasks
-          </span>
-          <div className="flex items-center gap-4">
-            <span className="text-ink-muted text-[14px] leading-normal">
-              {totalCount} task{totalCount !== 1 ? 's' : ''}
-            </span>
-            <CreateTodoModal />
-          </div>
-        </div>
-      </nav>
+      <Navbar totalCount={totalCount} />
 
       <main className="max-w-7xl mx-auto px-8">
-        {/* Header */}
         <header className="pt-16 pb-12">
           <p className="font-medium text-ink-muted mb-4 text-[14px] leading-[1.3]">Todo App</p>
           <h1 className="font-medium text-ink text-[40px] leading-[1.15] tracking-[-0.8px]">
@@ -43,12 +30,11 @@ export default async function HomePage() {
           </h1>
           <p className="text-ink-muted mt-4 text-[18px] leading-normal tracking-[-0.1px]">
             {totalCount === 0
-              ? 'No tasks yet — visit /admin to get started.'
+              ? 'No tasks yet — Click the button above to get started.'
               : `${pendingCount} pending · ${completedCount} completed`}
           </p>
         </header>
 
-        {/* Stats row */}
         {totalCount > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-12">
             {(
@@ -72,7 +58,6 @@ export default async function HomePage() {
           </div>
         )}
 
-        {/* Todo list */}
         {todos.length === 0 ? (
           <div className="bg-surface-1 border border-hairline rounded-2xl p-16 text-center">
             <p className="text-ink-muted text-[18px] leading-normal">No tasks yet.</p>
