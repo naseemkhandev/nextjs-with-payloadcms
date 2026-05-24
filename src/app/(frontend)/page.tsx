@@ -1,5 +1,6 @@
 import { getPayload } from 'payload'
 import config from '@/payload.config'
+import CreateTodoModal from './components/CreateTodoModal'
 import './styles.css'
 
 export default async function HomePage() {
@@ -27,9 +28,12 @@ export default async function HomePage() {
           >
             Tasks
           </span>
-          <span className="text-ink-muted" style={{ fontSize: '14px', lineHeight: 1.5 }}>
-            {totalCount} task{totalCount !== 1 ? 's' : ''}
-          </span>
+          <div className="flex items-center gap-4">
+            <span className="text-ink-muted" style={{ fontSize: '14px', lineHeight: 1.5 }}>
+              {totalCount} task{totalCount !== 1 ? 's' : ''}
+            </span>
+            <CreateTodoModal />
+          </div>
         </div>
       </nav>
 
