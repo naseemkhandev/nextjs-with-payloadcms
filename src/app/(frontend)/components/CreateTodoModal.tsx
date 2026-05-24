@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useRef, useState, useTransition } from 'react'
+import { Check, Plus } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { useRef, useState, useTransition } from 'react'
 import { createTodo } from '../actions/todo.action'
 
 export default function CreateTodoModal() {
@@ -14,18 +15,6 @@ export default function CreateTodoModal() {
   const [isPending, startTransition] = useTransition()
   const titleRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
-
-  useEffect(() => {
-    if (isOpen) titleRef.current?.focus()
-  }, [isOpen])
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) handleClose()
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [isOpen])
 
   const handleClose = () => {
     setIsOpen(false)
@@ -61,34 +50,23 @@ export default function CreateTodoModal() {
 
   return (
     <>
-      {/* Trigger */}
       <button
         onClick={() => setIsOpen(true)}
         className="bg-ink text-white text-[15px] font-medium leading-[1.2] rounded-lg px-4.5 py-2.5 inline-flex items-center gap-1.75 cursor-pointer"
       >
-        <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden>
-          <path
-            d="M6.5 1v11M1 6.5h11"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-          />
-        </svg>
+        <Plus className="w-4 h-4" />
         New Task
       </button>
 
-      {/* Overlay */}
       {isOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.22)]"
           onClick={handleClose}
         >
-          {/* Modal card */}
           <div
             className="relative w-full mx-4 max-w-120 bg-white border border-hairline rounded-2xl p-8 shadow-none"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Modal header */}
             <div className="flex items-center justify-between mb-6">
               <h2 className="font-medium text-ink text-[22px] leading-tight tracking-[-0.3px]">
                 New Task
@@ -97,14 +75,13 @@ export default function CreateTodoModal() {
                 type="button"
                 onClick={handleClose}
                 aria-label="Close"
-                className="bg-transparent border-none cursor-pointer text-ink-muted text-[22px] leading-none px-1.5 py-0.5 rounded-md"
+                className="bg-transparent border-none cursor-pointer text-ink-muted text-[22px] leading-none px-1.5 py-0.5 rounded-md -mt-10 -mr-4"
               >
                 ×
               </button>
             </div>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-              {/* Title */}
               <div className="flex flex-col gap-1.5">
                 <label
                   htmlFor="todo-title"
@@ -124,7 +101,6 @@ export default function CreateTodoModal() {
                 />
               </div>
 
-              {/* Description */}
               <div className="flex flex-col gap-1.5">
                 <label
                   htmlFor="todo-desc"
@@ -143,7 +119,6 @@ export default function CreateTodoModal() {
                 />
               </div>
 
-              {/* Completed toggle */}
               <label className="flex items-center gap-3 cursor-pointer select-none">
                 <div className="relative w-4.5 h-4.5 shrink-0">
                   <input
@@ -160,25 +135,19 @@ export default function CreateTodoModal() {
                     }`}
                   >
                     {completed && (
-                      <svg width="10" height="8" viewBox="0 0 10 8" fill="none" aria-hidden>
-                        <path
-                          d="M1 4L3.5 6.5L9 1"
-                          stroke="white"
-                          strokeWidth="1.6"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
+                      <Check
+                        className={`w-3 h-3 text-white transition-transform duration-150 ${
+                          busy ? 'scale-75' : 'scale-100'
+                        }`}
+                      />
                     )}
                   </div>
                 </div>
                 <span className="text-[15px] leading-[1.4] text-ink">Mark as completed</span>
               </label>
 
-              {/* Error */}
               {error && <p className="text-[14px] leading-normal text-semantic-error">{error}</p>}
 
-              {/* Actions */}
               <div className="flex items-center justify-end gap-3 pt-1">
                 <button
                   type="button"

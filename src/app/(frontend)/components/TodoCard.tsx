@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useTransition } from 'react'
 import type { Todo } from '@/payload-types'
+import { useState, useTransition } from 'react'
 import { updateTodoStatus } from '../actions/todo.action'
+import { Check } from 'lucide-react'
 
 export default function TodoCard({ todo }: { todo: Todo }) {
   const [completed, setCompleted] = useState(!!todo.completed)
@@ -37,14 +38,11 @@ export default function TodoCard({ todo }: { todo: Todo }) {
         completed ? 'opacity-60' : 'opacity-100'
       }`}
     >
-      {/* Title row */}
       <div className="flex items-start gap-3">
-        {/* Toggle button */}
         <button
           type="button"
           onClick={toggleStatus}
           disabled={busy}
-          aria-label={completed ? 'Mark as pending' : 'Mark as completed'}
           className={`shrink-0 mt-0.75 w-5 h-5 rounded-full border-[1.5px] flex items-center justify-center p-0 transition-colors duration-150 ${
             busy ? 'cursor-wait opacity-60' : 'cursor-pointer opacity-100'
           } ${
@@ -54,19 +52,14 @@ export default function TodoCard({ todo }: { todo: Todo }) {
           }`}
         >
           {completed && (
-            <svg width="10" height="8" viewBox="0 0 10 8" fill="none" aria-hidden>
-              <path
-                d="M1 4L3.5 6.5L9 1"
-                stroke="white"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <Check
+              className={`w-3 h-3 text-white transition-transform duration-150 ${
+                busy ? 'scale-75' : 'scale-100'
+              }`}
+            />
           )}
         </button>
 
-        {/* Title + badge */}
         <div className="flex items-start justify-between gap-3 flex-1 min-w-0">
           <h2
             className={`font-medium text-ink text-[22px] leading-tight tracking-[-0.3px] transition-all duration-150 ${
@@ -85,15 +78,12 @@ export default function TodoCard({ todo }: { todo: Todo }) {
         </div>
       </div>
 
-      {/* Description */}
       {todo.description && (
         <p className="text-ink-muted flex-1 text-[14px] leading-relaxed">{todo.description}</p>
       )}
 
-      {/* Error */}
       {error && <p className="text-semantic-error text-[12px] leading-relaxed">{error}</p>}
 
-      {/* Footer */}
       <div className="flex items-center gap-2 pt-3 mt-auto border-t border-[#ebe7e1]">
         <span
           className={`w-1.5 h-1.5 rounded-full shrink-0 transition-colors duration-150 ${
