@@ -33,5 +33,11 @@ export const Todos: CollectionConfig = {
       type: 'date',
       defaultValue: new Date().toISOString(),
     },
+    {
+      name: 'user',
+      type: 'relationship',
+      relationTo: 'users',
+      required: true,
+    },
   ],
 }

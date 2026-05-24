@@ -175,6 +175,7 @@ export interface Todo {
   completed?: boolean | null;
   createdAt: string;
   updatedAt: string;
+  user: number | User;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -305,6 +306,7 @@ export interface TodosSelect<T extends boolean = true> {
   completed?: T;
   createdAt?: T;
   updatedAt?: T;
+  user?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

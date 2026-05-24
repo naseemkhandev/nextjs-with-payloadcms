@@ -12,6 +12,9 @@ export default async function HomePage() {
   const result = await payload.find({
     collection: 'todos',
     limit: 100,
+    where: {
+      user: { equals: user?.id },
+    },
   })
 
   const todos = result.docs
