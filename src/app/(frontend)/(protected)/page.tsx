@@ -1,18 +1,11 @@
-import { redirect } from 'next/navigation'
 import Navbar from '../../../components/Navbar'
 import TodoCard from '../../../components/TodoCard'
-import getCurrentUser from '@/utils/getCurrentUser'
 import config from '@/payload.config'
 import { getPayload } from 'payload'
 
 export default async function HomePage() {
   const payloadConfig = await config
   const payload = await getPayload({ config: payloadConfig })
-  const user = await getCurrentUser()
-
-  if (!user) {
-    redirect('/login')
-  }
 
   const result = await payload.find({
     collection: 'todos',
