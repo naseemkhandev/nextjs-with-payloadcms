@@ -1,5 +1,6 @@
 import { Inter } from 'next/font/google'
 import React from 'react'
+import { Toaster } from 'react-hot-toast'
 import './styles.css'
 
 const inter = Inter({
@@ -19,7 +20,10 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
 
   return (
     <html lang="en" className={inter.variable}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <Toaster />
+      </body>
     </html>
   )
 }
