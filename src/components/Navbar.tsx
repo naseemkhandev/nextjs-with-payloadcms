@@ -4,8 +4,9 @@ import useHandleLogout from '@/hooks/useHandleLogout'
 import Link from 'next/link'
 import CreateTodoModal from './CreateTodoModal'
 import { Loader } from 'lucide-react'
+import { User } from '@/payload-types'
 
-const Navbar = ({ totalCount }: { totalCount: number }) => {
+const Navbar = ({ totalCount, user }: { totalCount: number; user: User | null }) => {
   const { handleLogout, isLoading } = useHandleLogout()
 
   return (
@@ -23,6 +24,16 @@ const Navbar = ({ totalCount }: { totalCount: number }) => {
             {totalCount} task{totalCount !== 1 ? 's' : ''}
           </span>
           <CreateTodoModal />
+
+          {/* admin button */}
+          {user && user.role === 'admin' && (
+            <Link
+              href="/admin"
+              className="bg-transparent text-ink-muted text-[14px] leading-[1.2] hover:text-ink transition-colors cursor-pointer disabled:cursor-not-allowed disabled:text-ink-subtle flex items-center gap-2"
+            >
+              Admin
+            </Link>
+          )}
 
           <button
             type="submit"

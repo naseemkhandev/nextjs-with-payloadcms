@@ -29,15 +29,12 @@ export default function RegisterPage() {
         return
       }
 
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_PAYLOAD_SERVER_URL}/api/users/register`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
-          credentials: 'include',
-        },
-      )
+      const response = await fetch(`${process.env.NEXT_PUBLIC_PAYLOAD_SERVER_URL}/api/users`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+        credentials: 'include',
+      })
 
       const data = await response.json()
 
@@ -47,6 +44,7 @@ export default function RegisterPage() {
 
       toast.success('Account created successfully')
       router.refresh()
+      router.push('/')
     } catch (error) {
       console.error('Registration failed:', error)
       toast.error(error instanceof Error ? error.message : 'An unexpected error occurred')
@@ -91,6 +89,9 @@ export default function RegisterPage() {
               type="email"
               placeholder="you@example.com"
               autoComplete="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
               className="bg-surface-1 text-ink text-[16px] leading-normal rounded-lg border border-hairline px-3.5 py-2.5 outline-none placeholder:text-ink-tertiary focus:border-ink transition-colors"
             />
           </div>
@@ -104,6 +105,9 @@ export default function RegisterPage() {
               type="password"
               placeholder="Min. 8 characters"
               autoComplete="new-password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
               className="bg-surface-1 text-ink text-[16px] leading-normal rounded-lg border border-hairline px-3.5 py-2.5 outline-none placeholder:text-ink-tertiary focus:border-ink transition-colors"
             />
           </div>
@@ -120,6 +124,9 @@ export default function RegisterPage() {
               type="password"
               placeholder="••••••••"
               autoComplete="new-password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
               className="bg-surface-1 text-ink text-[16px] leading-normal rounded-lg border border-hairline px-3.5 py-2.5 outline-none placeholder:text-ink-tertiary focus:border-ink transition-colors"
             />
           </div>

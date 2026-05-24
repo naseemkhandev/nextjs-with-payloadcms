@@ -6,8 +6,23 @@ export const Users: CollectionConfig = {
     useAsTitle: 'email',
   },
   auth: true,
+  access: {
+    create: () => true, // Allow public registration
+    admin: ({ req: { user } }) => user?.role === 'admin', // Only admins can access the Payload admin panel
+  },
   fields: [
-    // Email added by default
-    // Add more fields as needed
+    {
+      name: 'role',
+      type: 'select',
+      options: [
+        { label: 'Admin', value: 'admin' },
+        { label: 'User', value: 'user' },
+      ],
+      defaultValue: 'user',
+      required: true,
+      access: {
+        update: ({ req: { user } }) => user?.role === 'admin', // Only admins can change roles
+      },
+    },
   ],
 }

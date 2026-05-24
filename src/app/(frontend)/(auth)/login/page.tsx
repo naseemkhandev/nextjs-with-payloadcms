@@ -20,6 +20,7 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    const loading = toast.loading('Please wait...')
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_PAYLOAD_SERVER_URL}/api/users/login`,
@@ -42,6 +43,8 @@ export default function LoginPage() {
     } catch (error) {
       console.error('Login failed:', error)
       toast.error(error instanceof Error ? error.message : 'An unexpected error occurred')
+    } finally {
+      toast.dismiss(loading)
     }
   }
 

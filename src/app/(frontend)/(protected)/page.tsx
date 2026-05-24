@@ -1,3 +1,4 @@
+import getCurrentUser from '@/utils/getCurrentUser'
 import Navbar from '../../../components/Navbar'
 import TodoCard from '../../../components/TodoCard'
 import config from '@/payload.config'
@@ -6,6 +7,7 @@ import { getPayload } from 'payload'
 export default async function HomePage() {
   const payloadConfig = await config
   const payload = await getPayload({ config: payloadConfig })
+  const user = await getCurrentUser()
 
   const result = await payload.find({
     collection: 'todos',
@@ -19,7 +21,7 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-canvas">
-      <Navbar totalCount={totalCount} />
+      <Navbar totalCount={totalCount} user={user || null} />
 
       <main className="max-w-7xl mx-auto px-8">
         <header className="pt-16 pb-12">
